@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Generation One//Generation One 2026//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+DTSTART:20260917T190000
+DTEND:20260919T210000
+SUMMARY:Generation One 2026
+DESCRIPTION:A free young adult conference hosted by Temple Baptist Church. Register at https://tithely-5ff4efbc8e44d-200174.elvanto.net/form/c2691ff2-97bf-44d3-97be-fa03cae1cfaf
+LOCATION:Temple Baptist Church\, 11801 E Lincoln St\, Wichita\, KS 67202
+URL:https://tithely-5ff4efbc8e44d-200174.elvanto.net/form/c2691ff2-97bf-44d3-97be-fa03cae1cfaf
+STATUS:CONFIRMED
+END:VEVENT
+END:VCALENDAR
