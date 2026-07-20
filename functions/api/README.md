@@ -1,25 +1,40 @@
 # Elvanto → Meta Conversions API Webhook
 
-## Hosting platform
-**Cloudflare Pages Functions** — file at `functions/api/elvanto-webhook.js` auto-deploys as `/api/elvanto-webhook`. No extra config needed; Cloudflare detects the `functions/` directory automatically.
+## Deployment: Cloudflare Worker (standalone)
 
-## Environment variables
-Add these in the Cloudflare dashboard: **Pages project → Settings → Environment variables → Production**:
+Since Cloudflare Pages Functions are not supported on this account, deploy the webhook
+as a standalone **Cloudflare Worker**. The code in `functions/api/elvanto-webhook.js`
+uses the Workers ES module format and deploys directly to Workers.
 
-| Variable | Where to get it |
+### One-time setup
+
+1. Go to **Workers & Pages → Create → Worker**
+2. Name it something like `gen1-elvanto-webhook`
+3. Click **Edit code**, paste the contents of `functions/api/elvanto-webhook.js`, and **Save & Deploy**
+4. Your webhook URL will be: `https://gen1-elvanto-webhook.YOUR-ACCOUNT.workers.dev`
+
+### Environment variables
+
+In the Worker dashboard: **Settings → Variables and Secrets → Add variable**
+
+| Variable | Value |
 |---|---|
-| `META_PIXEL_ID` | Your pixel ID (e.g. `877284301688229`) |
-| `META_CAPI_ACCESS_TOKEN` | Meta Events Manager → Data Sources → your pixel → Settings → Conversions API → Generate access token |
+| `META_PIXEL_ID` | `877284301688229` |
+| `META_CAPI_ACCESS_TOKEN` | Meta Events Manager → your pixel → Settings → Conversions API → Generate access token |
 
-## Elvanto webhook setup
+### Elvanto webhook setup
+
 In Elvanto: **Settings → Integrations → Webhooks → Add Webhook**
-- Event: `Form Submission Created`
-- URL: `https://generationoneict.com/api/elvanto-webhook`
+- Event: Form Submission Created
+- URL: `https://gen1-elvanto-webhook.YOUR-ACCOUNT.workers.dev`
 - Method: POST
 
-## Test with curl (before Elvanto is wired up)
+### Test with curl
+
+Replace the URL with your actual Worker URL:
+
 ```bash
-curl -X POST https://generationoneict.com/api/elvanto-webhook \
+curl -X POST https://gen1-elvanto-webhook.YOUR-ACCOUNT.workers.dev \
   -H "Content-Type: application/json" \
   -d '{
     "type": "form:submission:create",
@@ -30,9 +45,13 @@ curl -X POST https://generationoneict.com/api/elvanto-webhook \
     }]
   }'
 ```
+
 Expected response: `{"received":true}`
 
-Then verify in **Meta Events Manager → Test Events** — a `CompleteRegistration` event should appear within a few seconds.
+Then check **Meta Events Manager → Test Events** for a `CompleteRegistration` event.
 
-## Phone number format note
-Meta's Conversions API expects phone numbers with country code, digits only (E.164 without the `+`). If your Elvanto form collects US numbers without a country code (e.g. `3165550100` instead of `13165550100`), the hash won't match Meta's internal records. Either configure Elvanto's form field to collect the full number, or prepend `1` in the code at the `rawPhone` line.
+### Phone number format note
+
+Meta expects phone in E.164 format — country code + digits, no `+` sign
+(e.g. `13165550100` not `3165550100`). If Elvanto submits numbers without
+the country code, prepend `1` in the `rawPhone` line of the Worker code.
