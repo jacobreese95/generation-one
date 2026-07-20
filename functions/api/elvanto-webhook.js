@@ -37,7 +37,7 @@ export default {
 
     const userData = {};
     if (rawEmail) userData.em = await sha256hex(rawEmail);
-    if (rawPhone) userData.ph = await sha256hex(rawPhone.replace(/\D/g, ''));
+    if (rawPhone) userData.ph = await sha256hex('1' + rawPhone.replace(/\D/g, ''));
 
     if (META_PIXEL_ID && META_CAPI_ACCESS_TOKEN && Object.keys(userData).length > 0) {
       const capiPayload = {
